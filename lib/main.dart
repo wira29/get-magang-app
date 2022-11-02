@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get_magang_app/screens/home_screen.dart';
+import 'package:get_magang_app/screens/attendance_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const HomeScreen(),
+      home: const AttendanceScreen(),
     );
   }
 }
