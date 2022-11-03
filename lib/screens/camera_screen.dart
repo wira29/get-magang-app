@@ -24,14 +24,7 @@ class _CameraScreenState extends State<CameraScreen> {
 
   @override
   void initState() {
-    // Timer(Duration(milliseconds: 3000), () async {
-    //   if (!controller.value.isTakingPicture) {
-    //     File result = await takePicture();
-    //     Navigator.pop(context, result);
-    //   }
-    // });
-
-    const timeOutInSeconds = 5;
+    const timeOutInSeconds = 3;
     const stepInSeconds = 1;
     int currentNumber = 0;
 
@@ -84,6 +77,7 @@ class _CameraScreenState extends State<CameraScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Colors.black,
         body: FutureBuilder(
             future: initializeCamera(),
             builder: (_, snapshot) =>
@@ -97,6 +91,28 @@ class _CameraScreenState extends State<CameraScreen> {
                                   controller.value.aspectRatio,
                               child: CameraPreview(controller),
                             ),
+                            Expanded(
+                                child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  'assets/illustrations/user.png',
+                                  width: 100,
+                                  height: 100,
+                                ),
+                                SizedBox(
+                                  height: 16,
+                                ),
+                                Text(
+                                  "Posisikan wajah anda sesuai lingkaran!",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            )),
                           ],
                         ),
                         SizedBox(

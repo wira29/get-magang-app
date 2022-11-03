@@ -1,4 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:get_magang_app/data/services/api_service.dart';
+import 'package:get_magang_app/provider/scan_provider.dart';
+import 'package:get_magang_app/utils/result_state.dart';
+import 'package:provider/provider.dart';
+
+import '../data/models/Scan.dart';
+import 'camera_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -8,41 +17,124 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  File? imageFile;
+  TextEditingController controller = TextEditingController();
+  FocusNode focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    controller.dispose();
+    focusNode.dispose();
+    super.dispose();
+  }
+
+  void submitAttendance(Scan scan, ScanProvider provider) {
+    provider.attendance(scan);
+    controller.clear();
+    print('selesai');
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/illustrations/rfid_illustration.png',
-                width: 200,
-                height: 200,
-              ),
-              const Text(
-                "Silakan melakukan scan id card anda pada RFID scanner !",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18,
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Scan ID Card Anda',
+    return ChangeNotifierProvider(
+      create: (context) => ScanProvider(apiService: ApiService()),
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        body: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Consumer<ScanProvider>(
+            builder: (context, state, _) {
+              if (state.state == ResultState.Loading) {
+                return Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(),
+                      ),
+                      SizedBox(
+                        width: 32,
+                      ),
+                      Text("Loading..."),
+                    ],
                   ),
-                  autofocus: true,
-                  onFieldSubmitted: (value) {
-                    print(value);
-                  },
-                ),
-              ),
-            ],
+                );
+              } else if (state.state == ResultState.Error) {
+                return Center(
+                  child: Text(state.message),
+                );
+              } else {
+                return Stack(
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/illustrations/rfid_illustration.png',
+                            width: 200,
+                            height: 200,
+                          ),
+                          const Text(
+                            "Silakan melakukan scan id card anda pada RFID scanner !",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 18,
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 16),
+                            child: TextFormField(
+                              autofocus: true,
+                              controller: controller,
+                              focusNode: focusNode,
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'Scan Id Card Anda',
+                              ),
+                              onFieldSubmitted: (value) async {
+                                imageFile = await Navigator.push<File>(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => CameraScreen()));
+                                // focusNode.requestFocus();
+                                // controller.text = "";
+                                // print(value);
+                                submitAttendance(
+                                    Scan(rfid: value, photo: imageFile!),
+                                    state);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 20,
+                      left: 0,
+                      right: 0,
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/illustrations/logo-black.png',
+                              width: 160,
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                );
+              }
+            },
           ),
         ),
       ),
