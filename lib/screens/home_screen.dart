@@ -28,10 +28,21 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  void submitAttendance(Scan scan, ScanProvider provider) {
-    provider.attendance(scan);
+  void submitAttendance(Scan scan, ScanProvider provider) async {
+    await provider.attendance(scan);
     controller.clear();
-    print('selesai');
+
+    showDialog(
+        context: context,
+        builder: (context) {
+          Future.delayed(Duration(seconds: 1), () {
+            Navigator.of(context).pop(true);
+          });
+          return AlertDialog(
+            title: Text('Berhasil'),
+            content: Text("berhasil melakukan absen"),
+          );
+        });
   }
 
   @override

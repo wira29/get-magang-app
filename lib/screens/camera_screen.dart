@@ -24,7 +24,7 @@ class _CameraScreenState extends State<CameraScreen> {
 
   @override
   void initState() {
-    const timeOutInSeconds = 3;
+    const timeOutInSeconds = 1;
     const stepInSeconds = 1;
     int currentNumber = 0;
 
