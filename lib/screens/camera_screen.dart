@@ -7,7 +7,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:quiver/async.dart';
 
 class CameraScreen extends StatefulWidget {
-  const CameraScreen({Key? key}) : super(key: key);
+  const CameraScreen({required this.cameras, Key? key}) : super(key: key);
+  final List<CameraDescription> cameras;
 
   @override
   State<CameraScreen> createState() => _CameraScreenState();
@@ -16,14 +17,19 @@ class CameraScreen extends StatefulWidget {
 class _CameraScreenState extends State<CameraScreen> {
   late CameraController controller;
 
+  late Future<void> cameraValue;
+
   Future<void> initializeCamera() async {
-    var cameras = await availableCameras();
-    controller = CameraController(cameras[1], ResolutionPreset.medium);
+    // var cameras = await availableCameras();
+    controller = CameraController(widget.cameras[1], ResolutionPreset.medium);
     await controller.initialize();
   }
 
   @override
   void initState() {
+    controller = CameraController(widget.cameras[0], ResolutionPreset.medium);
+    cameraValue = controller.initialize();
+
     const timeOutInSeconds = 1;
     const stepInSeconds = 1;
     int currentNumber = 0;
@@ -79,7 +85,7 @@ class _CameraScreenState extends State<CameraScreen> {
     return Scaffold(
         backgroundColor: Colors.black,
         body: FutureBuilder(
-            future: initializeCamera(),
+            future: cameraValue,
             builder: (_, snapshot) =>
                 (snapshot.connectionState == ConnectionState.done)
                     ? Stack(children: [
@@ -87,38 +93,37 @@ class _CameraScreenState extends State<CameraScreen> {
                           children: [
                             SizedBox(
                               width: MediaQuery.of(context).size.width,
-                              height: MediaQuery.of(context).size.width *
-                                  controller.value.aspectRatio,
+                              height: MediaQuery.of(context).size.height,
                               child: CameraPreview(controller),
                             ),
-                            Expanded(
-                                child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Image.asset(
-                                  'assets/illustrations/user.png',
-                                  width: 100,
-                                  height: 100,
-                                ),
-                                SizedBox(
-                                  height: 16,
-                                ),
-                                Text(
-                                  "Posisikan wajah anda sesuai lingkaran!",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            )),
+                            // Expanded(
+                            //   child: Column(
+                            //     mainAxisAlignment: MainAxisAlignment.center,
+                            //     crossAxisAlignment: CrossAxisAlignment.center,
+                            //     children: [
+                            //       Image.asset(
+                            //         'assets/illustrations/user.png',
+                            //         width: 100,
+                            //         height: 100,
+                            //       ),
+                            //       SizedBox(
+                            //         height: 16,
+                            //       ),
+                            //       Text(
+                            //         "Posisikan wajah anda sesuai lingkaran!",
+                            //         textAlign: TextAlign.center,
+                            //         style: TextStyle(
+                            //           color: Colors.white,
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
                           ],
                         ),
                         SizedBox(
                           width: MediaQuery.of(context).size.width,
-                          height: MediaQuery.of(context).size.width *
-                              controller.value.aspectRatio,
+                          height: MediaQuery.of(context).size.height,
                           child: Image.asset(
                             'assets/illustrations/camera-overlay.png',
                             fit: BoxFit.cover,
