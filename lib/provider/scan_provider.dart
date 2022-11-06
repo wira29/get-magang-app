@@ -17,20 +17,20 @@ class ScanProvider extends ChangeNotifier {
   ResultState get state => _state;
 
   Future<dynamic> attendance(Scan scan) async {
-    print('provider');
     try {
       _state = ResultState.Loading;
       notifyListeners();
 
-      final response = await apiService.postAttendance(scan);
+      final RequestResult response = await apiService.postAttendance(scan);
       _state = ResultState.Success;
       notifyListeners();
 
       return response;
     } catch (e) {
       _state = ResultState.Error;
+      _message = e.toString();
       notifyListeners();
-      return _message = "Error --> ${e.runtimeType.toString()}";
+      return RequestResult(status: 'Gagal', message: e.toString());
     }
   }
 }

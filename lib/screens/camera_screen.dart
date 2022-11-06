@@ -19,12 +19,6 @@ class _CameraScreenState extends State<CameraScreen> {
 
   late Future<void> cameraValue;
 
-  Future<void> initializeCamera() async {
-    // var cameras = await availableCameras();
-    controller = CameraController(widget.cameras[1], ResolutionPreset.medium);
-    await controller.initialize();
-  }
-
   @override
   void initState() {
     controller = CameraController(widget.cameras[0], ResolutionPreset.medium);
@@ -34,9 +28,9 @@ class _CameraScreenState extends State<CameraScreen> {
     const stepInSeconds = 1;
     int currentNumber = 0;
 
-    CountdownTimer countDownTimer = new CountdownTimer(
-        new Duration(seconds: timeOutInSeconds),
-        new Duration(seconds: stepInSeconds));
+    CountdownTimer countDownTimer = CountdownTimer(
+        const Duration(seconds: timeOutInSeconds),
+        const Duration(seconds: stepInSeconds));
 
     var sub = countDownTimer.listen(null);
     sub.onData((duration) {
@@ -44,7 +38,6 @@ class _CameraScreenState extends State<CameraScreen> {
       int countdownNumber = timeOutInSeconds - currentNumber;
       // Make it start from the timeout value
       countdownNumber += stepInSeconds;
-      print('Your message here: $countdownNumber');
     });
 
     sub.onDone(() async {
@@ -68,7 +61,6 @@ class _CameraScreenState extends State<CameraScreen> {
     Directory root = await getTemporaryDirectory();
     String directoryPath = '${root.path}/camera';
     await Directory(directoryPath).create(recursive: true);
-    String filepath = '$directoryPath/${DateTime.now()}.jpg';
     XFile? image;
 
     try {
@@ -96,29 +88,6 @@ class _CameraScreenState extends State<CameraScreen> {
                               height: MediaQuery.of(context).size.height,
                               child: CameraPreview(controller),
                             ),
-                            // Expanded(
-                            //   child: Column(
-                            //     mainAxisAlignment: MainAxisAlignment.center,
-                            //     crossAxisAlignment: CrossAxisAlignment.center,
-                            //     children: [
-                            //       Image.asset(
-                            //         'assets/illustrations/user.png',
-                            //         width: 100,
-                            //         height: 100,
-                            //       ),
-                            //       SizedBox(
-                            //         height: 16,
-                            //       ),
-                            //       Text(
-                            //         "Posisikan wajah anda sesuai lingkaran!",
-                            //         textAlign: TextAlign.center,
-                            //         style: TextStyle(
-                            //           color: Colors.white,
-                            //         ),
-                            //       ),
-                            //     ],
-                            //   ),
-                            // ),
                           ],
                         ),
                         SizedBox(
@@ -130,7 +99,7 @@ class _CameraScreenState extends State<CameraScreen> {
                           ),
                         ),
                       ])
-                    : Center(
+                    : const Center(
                         child: SizedBox(
                           width: 20,
                           height: 20,

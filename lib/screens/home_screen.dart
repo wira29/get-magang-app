@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:get_magang_app/data/models/RequestResult.dart';
 import 'package:get_magang_app/data/services/api_service.dart';
 import 'package:get_magang_app/provider/scan_provider.dart';
 import 'package:get_magang_app/utils/result_state.dart';
@@ -31,18 +32,18 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void submitAttendance(Scan scan, ScanProvider provider) async {
-    await provider.attendance(scan);
+    RequestResult result = await provider.attendance(scan);
     controller.clear();
 
     showDialog(
         context: context,
         builder: (context) {
-          Future.delayed(Duration(seconds: 1), () {
+          Future.delayed(const Duration(seconds: 3), () {
             Navigator.of(context).pop(true);
           });
           return AlertDialog(
-            title: Text('Berhasil'),
-            content: Text("berhasil melakukan absen"),
+            title: Text(result.status),
+            content: Text(result.message),
           );
         });
   }
@@ -62,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                      children: const [
                         SizedBox(
                           width: 24,
                           height: 24,
@@ -101,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.symmetric(
+                              padding: const EdgeInsets.symmetric(
                                   horizontal: 8, vertical: 16),
                               child: TextFormField(
                                 autofocus: true,
@@ -113,14 +114,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 onFieldSubmitted: (value) async {
                                   imageFile = await Navigator.push<File>(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) => CameraScreen(
-                                                cameras: widget.cameras,
-                                              )));
-                                  // focusNode.requestFocus();
-                                  // controller.text = "";
-                                  // print(value);
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => CameraScreen(
+                                        cameras: widget.cameras,
+                                      ),
+                                    ),
+                                  );
                                   submitAttendance(
                                       Scan(rfid: value, photo: imageFile!),
                                       state);

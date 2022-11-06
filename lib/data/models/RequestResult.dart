@@ -1,14 +1,14 @@
 class RequestResult {
-  int statusCode;
+  String status;
   String message;
 
   RequestResult({
-    required this.statusCode,
+    required this.status,
     required this.message,
   });
 
   factory RequestResult.fromJson(Map<String, dynamic> json) => RequestResult(
-        statusCode: json['status'],
+        status: json['status'],
         message: json['message'],
       );
 }
